@@ -1,7 +1,7 @@
 [package]
 name = "letiul/nknot"
 version = "1.0.0"
-registry = "https://stupid.com"
+registry = "https://github.com/lettuce-magician/nknot"
 realm = "dev"
 
 [dependencies]
