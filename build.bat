@@ -1,0 +1,1 @@
+rojo build -o C:/Users/Pichau/AppData/Local/Roblox/Plugins/NKnot.rbxm --watch

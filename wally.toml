@@ -1,0 +1,9 @@
+[package]
+name = "letiul/nknot"
+version = "1.0.0"
+registry = "https://stupid.com"
+realm = "dev"
+
+[dependencies]
+roact = "roblox/roact@1.4.4"
+promise = "evaera/promise@4.0.0"
