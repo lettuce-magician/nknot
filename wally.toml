@@ -1,9 +1,10 @@
 [package]
 name = "letiul/nknot"
 version = "1.0.0"
-registry = "https://github.com/lettuce-magician/nknot"
+registry = "https://github.com/UpliftGames/wally-index"
 realm = "dev"
 
 [dependencies]
 roact = "roblox/roact@1.4.4"
 promise = "evaera/promise@4.0.0"
+signal = "lucasmzreal/fastsignal@10.2.1"
