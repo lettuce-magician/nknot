@@ -5,7 +5,7 @@ local Packages = script.Parent.Parent.Packages
 local Systems = script.Parent.Parent.Systems
 
 local Roact = require(Packages.roact)
-local Signal = require(Packages.)
+local Signal = require(Packages.fastsignal)
 local NodeUtil = require(Systems.Node)
 local Toolbar = plugin:CreateToolbar("NKnot")
 
@@ -41,157 +41,192 @@ local UI = {
 	Toolbar = Toolbar,
 }
 
-local OnRequestDone = 
-
-local function StringProp(Name, Data)
-    Data[Name] = ""
-    return Roact.createElement("TextLabel", {
-        Font = Enum.Font.SourceSans,
-        BackgroundTransparency = 1,
-        TextColor3 = Color3.fromRGB(255, 255, 255),
-        Size = UDim2.new(1.000, 0, 0.075, 0),
-        Text = Name,
-        TextScaled = true,
-        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-    }, {
-        Value = Roact.createElement("TextBox", {
-            Position = UDim2.new(0.813, 0, 0.106, 0),
-            Transparency = 0,
-            Font = Enum.Font.SourceSans,
-            TextColor3 = Color3.fromRGB(255, 255, 255),
-            Size = UDim2.new(0.174, 0, 0.780, 0),
-            Text = "",
-            TextScaled = true,
-            BackgroundColor3 = Color3.fromRGB(16, 16, 16),
-            [Roact.Change.Text] = function(me)
-                Data[me.Name] = me.Text
-            end
-        }, {
-            UICorner = Roact.createElement("UICorner", {
-                CornerRadius = UDim.new(0.400, 0),
-            }),
-
-            UIStroke = Roact.createElement("UIStroke", {
-                ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-                LineJoinMode = Enum.LineJoinMode.Round,
-                Color = Color3.fromRGB(255, 255, 255),
-                Thickness = 1,
-                Transparency = 0,
-            }),
-        }),
-    })
-end
-
-local function ColorProp(Name, Data)
-    Data[Name] = Color3.new(0,0,0)
-    local preview = Roact.createRef()
-
-    return Roact.createElement("TextLabel", {
-        Font = Enum.Font.SourceSans,
-        BackgroundTransparency = 1,
-        TextColor3 = Color3.fromRGB(255, 255, 255),
-        Size = UDim2.new(1.000, 0, 0.075, 0),
-        Text = Name,
-        TextScaled = true,
-        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-    }, {
-        Value = Roact.createElement("TextBox", {
-            Position = UDim2.new(0.813, 0, 0.106, 0),
-            Transparency = 0,
-            Font = Enum.Font.SourceSans,
-            TextColor3 = Color3.fromRGB(255, 255, 255),
-            Size = UDim2.new(0.174, 0, 0.780, 0),
-            Text = "",
-            TextScaled = true,
-            BackgroundColor3 = Color3.fromRGB(16, 16, 16),
-            [Roact.Change.Text] = function(me:TextBox)
-                me.Text = me.Text:gsub("%D+", "")
-                local R,G,B = me.Text:match("(%d%d?%d?),(%d%d?%d?),(%d%d?%d?)")
-
-                if R == nil then
-                    R, G, B = 0,0,0
-                end
-
-                Data[me.Name] = Color3.fromRGB(R,G,B)
-                preview:getValue().BackgroundColor3 = Data[me.Name]
-            end
-        }, {
-            UICorner = Roact.createElement("UICorner", {
-                CornerRadius = UDim.new(0.400, 0),
-            }),
-
-            UIStroke = Roact.createElement("UIStroke", {
-                ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-                LineJoinMode = Enum.LineJoinMode.Round,
-                Color = Color3.fromRGB(255, 255, 255),
-                Thickness = 1,
-                Transparency = 0,
-            }),
-        }),
-
-        Preview = Roact.createElement("Frame", {
-            Position = UDim2.new(0.756, 0, 0.142, 0),
-            Size = UDim2.new(0.037, 0, 0.709, 0),
-            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-            [Roact.Ref] = preview
-        }, {
-            UICorner = Roact.createElement("UICorner", {
-                CornerRadius = UDim.new(0.200, 0),
-            }),
-
-            UIStroke = Roact.createElement("UIStroke", {
-                ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-                LineJoinMode = Enum.LineJoinMode.Round,
-                Color = Color3.fromRGB(255, 255, 255),
-                Thickness = 1,
-                Transparency = 0,
-            }),
-        }),
-    })
-end
-
-local Checkbox = {
-    [true] = "rbxasset://textures//DeveloperFramework/checkbox_checked_dark.png",
-    [false] = "rbxasset://textures//DeveloperFramework/checkbox_unchecked_dark.png"
-}
-
-local function BoolProp(Name, Default, Data)
-    Data[Name] = Default
-
-    return Roact.createElement("TextLabel", {
-        Font = Enum.Font.SourceSans,
-        BackgroundTransparency = 1,
-        TextColor3 = Color3.fromRGB(255, 255, 255),
-        Size = UDim2.new(1.000, 0, 0.075, 0),
-        Text = Name,
-        TextScaled = true,
-        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-    }, {
-        Toggle = Roact.createElement("ImageButton", {
-            ImageColor3 = Color3.fromRGB(255, 255, 255),
-            Image = Checkbox[Data[Name]],
-            BackgroundTransparency = 1,
-            Position = UDim2.new(0.935, 0, 0.142, 0),
-            Size = UDim2.new(0.037, 0, 0.709, 0),
-            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-            [Roact.Event.Activated] = function(inst:ImageButton)
-                Data[Name] = not Data[Name]
-                inst.Image = Checkbox[Data[Name]]
-            end
-        }),
-    })
-end
-
 function UI.Component.RequestNodeInfo(InitProps: { Dock: DockWidgetPluginGui })
-    local Data = {}
+	local OnRequestDone = Signal.new()
 
-	return Roact.createFragment({
-		MainFrame = Roact.createElement("Frame", {
-			Color = Color3.fromRGB(255, 255, 255),
-			Position = UDim2.new(0.330, 0, 0.301, 0),
-			Size = UDim2.new(1, 0, 1, 0),
-			BackgroundColor3 = Color3.fromRGB(43, 43, 43),
+	local Checkbox = {
+		[true] = "rbxasset://textures//DeveloperFramework/checkbox_checked_dark.png",
+		[false] = "rbxasset://textures//DeveloperFramework/checkbox_unchecked_dark.png",
+	}
+
+	local Data = {}
+	OnRequestDone:Connect(function()
+		table.clear(Data)
+	end)
+
+	UI.Buttons.CreateNode.Click:Connect(function()
+		InitProps.Dock.Enabled = true
+	end)
+
+	InitProps.Dock:BindToClose(function()
+		OnRequestDone:Fire()
+	end)
+
+	local function StringProp(Name)
+		Data[Name] = ""
+
+		local self = Roact.createRef()
+		OnRequestDone:Connect(function()
+			self:getValue().Value.Text = ""
+		end)
+
+		return Roact.createElement("TextLabel", {
+			Font = Enum.Font.SourceSans,
+			BackgroundTransparency = 1,
+			TextColor3 = Color3.fromRGB(255, 255, 255),
+			Size = UDim2.new(1.000, 0, 0.075, 0),
+			Text = Name,
+			TextScaled = true,
+			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+			TextXAlignment = Enum.TextXAlignment.Left,
+			[Roact.Ref] = self,
 		}, {
+			Value = Roact.createElement("TextBox", {
+				Position = UDim2.new(0.813, 0, 0.106, 0),
+				Transparency = 0,
+				Font = Enum.Font.SourceSans,
+				TextColor3 = Color3.fromRGB(255, 255, 255),
+				Size = UDim2.new(0.174, 0, 0.780, 0),
+				Text = "",
+				TextScaled = true,
+				BackgroundColor3 = Color3.fromRGB(16, 16, 16),
+				[Roact.Change.Text] = function(me)
+					Data[Name] = me.Text
+                    print(Name, Data[Name])
+				end,
+			}, {
+				UICorner = Roact.createElement("UICorner", {
+					CornerRadius = UDim.new(0.400, 0),
+				}),
+
+				UIStroke = Roact.createElement("UIStroke", {
+					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+					LineJoinMode = Enum.LineJoinMode.Round,
+					Color = Color3.fromRGB(255, 255, 255),
+					Thickness = 1,
+					Transparency = 0,
+				}),
+			}),
+		})
+	end
+
+	local function ColorProp(Name)
+		Data[Name] = Color3.new(0, 0, 0)
+		local preview = Roact.createRef()
+
+		local self = Roact.createRef()
+		OnRequestDone:Connect(function()
+			self:getValue().Value.Text = "0,0,0"
+			preview:getValue().BackgroundColor3 = Color3.new(0, 0, 0)
+		end)
+
+		return Roact.createElement("TextLabel", {
+			Font = Enum.Font.SourceSans,
+			BackgroundTransparency = 1,
+			TextColor3 = Color3.fromRGB(255, 255, 255),
+			Size = UDim2.new(1.000, 0, 0.075, 0),
+			Text = Name,
+			TextScaled = true,
+			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+			TextXAlignment = Enum.TextXAlignment.Left,
+			[Roact.Ref] = self,
+		}, {
+			Value = Roact.createElement("TextBox", {
+				Position = UDim2.new(0.813, 0, 0.106, 0),
+				Transparency = 0,
+				Font = Enum.Font.SourceSans,
+				TextColor3 = Color3.fromRGB(255, 255, 255),
+				Size = UDim2.new(0.174, 0, 0.780, 0),
+				Text = "0,0,0",
+				TextScaled = true,
+				BackgroundColor3 = Color3.fromRGB(16, 16, 16),
+				[Roact.Change.Text] = function(me: TextBox)
+					local R, G, B = me.Text:match("(%d%d?%d?),(%d%d?%d?),(%d%d?%d?)")
+
+					if R == nil then
+						R, G, B = 0, 0, 0
+					end
+
+					Data[self:getValue().Name] = Color3.fromRGB(R, G, B)
+					preview:getValue().BackgroundColor3 = Data[Name]
+
+                    print(Name, Data[Name])
+				end,
+			}, {
+				UICorner = Roact.createElement("UICorner", {
+					CornerRadius = UDim.new(0.400, 0),
+				}),
+
+				UIStroke = Roact.createElement("UIStroke", {
+					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+					LineJoinMode = Enum.LineJoinMode.Round,
+					Color = Color3.fromRGB(255, 255, 255),
+					Thickness = 1,
+					Transparency = 0,
+				}),
+			}),
+
+			Preview = Roact.createElement("Frame", {
+				Position = UDim2.new(0.756, 0, 0.142, 0),
+				Size = UDim2.new(0, 20, 0, 20),
+				BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+				[Roact.Ref] = preview,
+			}, {
+				UICorner = Roact.createElement("UICorner", {
+					CornerRadius = UDim.new(0.200, 0),
+				}),
+
+				UIStroke = Roact.createElement("UIStroke", {
+					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+					LineJoinMode = Enum.LineJoinMode.Round,
+					Color = Color3.fromRGB(255, 255, 255),
+					Thickness = 1,
+					Transparency = 0,
+				}),
+			}),
+		})
+	end
+
+	local function BoolProp(Name, Default)
+		local self = Roact.createRef()
+		OnRequestDone:Connect(function()
+            Data[Name] = Default
+			self:getValue().Toggle.Image = Checkbox[Default]
+		end)
+
+		return Roact.createElement("TextLabel", {
+			Font = Enum.Font.SourceSans,
+			TextXAlignment = Enum.TextXAlignment.Left,
+			BackgroundTransparency = 1,
+			TextColor3 = Color3.fromRGB(255, 255, 255),
+			Size = UDim2.new(1.000, 0, 0.075, 0),
+			Text = Name,
+			TextScaled = true,
+			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+			[Roact.Ref] = self,
+		}, {
+			Toggle = Roact.createElement("ImageButton", {
+				ImageColor3 = Color3.fromRGB(255, 255, 255),
+				Image = Checkbox[Data[Name]],
+				BackgroundTransparency = 1,
+				Position = UDim2.new(0.935, 0, 0.142, 0),
+				Size = UDim2.new(0, 20, 0, 20),
+				BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+				[Roact.Event.Activated] = function(me)
+					Data[Name] = not Data[Name]
+					me.Image = Checkbox[Data[Name]]
+                    print(Name, Data[Name])
+				end,
+			}),
+		})
+	end
+
+	return Roact.createElement("Frame", {
+		Position = UDim2.new(0, 0, 0, 0),
+		Size = UDim2.new(1, 0, 1, 0),
+		BackgroundColor3 = Color3.fromRGB(43, 43, 43),
+	}, {
+		Items = Roact.createElement("Folder", {}, {
 			UIGridLayout = Roact.createElement("UIGridLayout", {
 				VerticalAlignment = Enum.VerticalAlignment.Top,
 				SortOrder = Enum.SortOrder.LayoutOrder,
@@ -199,27 +234,30 @@ function UI.Component.RequestNodeInfo(InitProps: { Dock: DockWidgetPluginGui })
 				CellSize = UDim2.new(1.000, 0, 0.075, 0),
 			}),
 
-			Type = StringProp("Type", Data),
-			Space = StringProp("Space",Data),
-			Color = ColorProp("Color",Data),
+			Type = StringProp("Type"),
+			Space = StringProp("Space"),
+			Color = ColorProp("Color"),
 
-			Inputs = BoolProp("Input", true, Data),
-            Outputs = BoolProp("Output", true, Data),
+			Input = BoolProp("Input", true),
+			Output = BoolProp("Output", true),
 		}),
-		Close = Roact.createElement("TextButton", {
+        Save = Roact.createElement("TextButton", {
+            AnchorPoint = Vector2.new(0.5,0.5),
 			Font = Enum.Font.SourceSans,
-			Position = UDim2.new(0.481, 0, 0.654, 0),
+			Position = UDim2.new(0.5, 0, 0.8, 00),
 			TextColor3 = Color3.fromRGB(255, 255, 255),
 			Size = UDim2.new(0.000, 60, 0.000, 35),
 			Text = "Save",
 			TextScaled = true,
 			BackgroundColor3 = Color3.fromRGB(84, 84, 84),
             [Roact.Event.Activated] = function()
+                print(Data)
                 local Node = NodeUtil.CreateNode(Data.Type, Data.Color, Data.Space)
                 Node:SetAttribute("Inputs", Data.Input)
-                Node:SetAttribute("Outputs", Data.Outputs)
+                Node:SetAttribute("Outputs", Data.Output)
                 Selection:Set({Node})
                 InitProps.Dock.Enabled = false
+                OnRequestDone:Fire()
             end
 		}, {
 			UICorner = Roact.createElement("UICorner", {
